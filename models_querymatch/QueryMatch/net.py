@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from models_querymatch.language_encoder import language_encoder
 from models_querymatch.visual_encoder import visual_encoder
-from models_querymatch.QueryMatch.head import WeakREChead
+from models_querymatch.QueryMatch.head import WeakREShead
 from models_querymatch.network_blocks import MultiScaleFusion
 from detectron2.utils.visualizer import ColorMode, Visualizer
 from detectron2.data import MetadataCatalog
@@ -25,7 +25,7 @@ class Net(nn.Module):
         self.lang_encoder = language_encoder(__C, pretrained_emb, token_size)
         self.linear_vs = nn.Linear(256, __C.HIDDEN_SIZE)
         self.linear_ts = nn.Linear(__C.HIDDEN_SIZE, __C.HIDDEN_SIZE)
-        self.head = WeakREChead(__C)
+        self.head = WeakREShead(__C)
         self.device = cfg.MODEL.DEVICE
         self.class_num = __C.CLASS_NUM
         if __C.VIS_FREEZE:

@@ -17,17 +17,16 @@ def batch_get_hq_negqr(candi_vec, lan_emb, each_select=4):
     bs, negn, qn, fd = candi_vec.shape[0], candi_vec.shape[1], candi_vec.shape[2], candi_vec.shape[-1]
     max_vals = torch.ones((bs, 1)).to(candi_vec.device)
     min_vals = (max_vals * -1).to(candi_vec.device)
-    sem_mat = torch.ones(bs, negn, qn).to(candi_vec.device)
+    uniqueness = torch.ones(bs, negn, qn).to(candi_vec.device)
     all_candi_vec = candi_vec.view(bs, negn*qn, fd)
     self_similarity = F.cosine_similarity(candi_vec.unsqueeze(3).expand(bs,negn,qn,negn*qn,fd), all_candi_vec.unsqueeze(1).unsqueeze(2).expand(bs,negn,qn,negn*qn,fd),dim=-1)  # bs,negn,qn,qn
     self_sim_norm = min_max_normalize(-self_similarity,min_vals.unsqueeze(2).unsqueeze(3),max_vals.unsqueeze(2).unsqueeze(3))
     lan_similarity = torch.einsum('bnvd, bd -> bnv',candi_vec,lan_emb.squeeze(1))
-    lan_sim_norm = min_max_normalize(lan_similarity,dim=2)
-    second_term = lan_sim_norm
-    select_score = sem_mat * second_term
-    # select_score = sem_mat + second_term
-    # select_score = sem_mat 
-    # select_score = second_term
+    difficulty = min_max_normalize(lan_similarity,dim=2)
+    select_score = uniqueness * difficulty
+    # select_score = uniqueness + difficulty
+    # select_score = uniqueness 
+    # select_score = difficulty
     for i in range(each_select):
         value, indices = torch.max(select_score,dim=-1)  
         mul_indices = indices + (torch.arange(15).unsqueeze(0).expand(bs,negn).to(candi_vec.device)*qn)
@@ -35,11 +34,11 @@ def batch_get_hq_negqr(candi_vec, lan_emb, each_select=4):
         indices = indices.unsqueeze(2)
         query_value = self_sim_norm.gather(3,mul_indices.to(self_sim_norm.device))
         query_value = torch.min(query_value,dim=-1)[0]
-        sem_mat, _ = torch.min(torch.stack([sem_mat, query_value]), dim=0) 
-        select_score = sem_mat * second_term
-        # select_score = sem_mat + second_term
-        # select_score = sem_mat 
-        # select_score = second_term
+        uniqueness, _ = torch.min(torch.stack([uniqueness, query_value]), dim=0) 
+        select_score = uniqueness * difficulty
+        # select_score = uniqueness + difficulty
+        # select_score = uniqueness 
+        # select_score = difficulty
         if i == 0:
             res_indices = indices
         else:
@@ -47,7 +46,7 @@ def batch_get_hq_negqr(candi_vec, lan_emb, each_select=4):
     return res_indices
 
 
-def getContrast(vis_emb, lan_emb, stat_sim_dict=None, each_select=4):
+def get_contrast(vis_emb, lan_emb, stat_sim_dict=None, each_select=4):
     bs, qn, fd = vis_emb.shape
     vis_emb_orig = vis_emb.clone()
     vis_emb_bs = vis_emb_orig.unsqueeze(0).expand(bs,bs,qn,fd)
@@ -81,21 +80,21 @@ def getContrast(vis_emb, lan_emb, stat_sim_dict=None, each_select=4):
     return loss_contra, stat_sim_dict
 
 
-def getPrediction(vis_emb, lan_emb):
+def get_prediction(vis_emb, lan_emb):
     sim_map = torch.einsum('bkd, byd -> byk', vis_emb, lan_emb)
     maxval, v = sim_map.max(dim=2, keepdim=True)
     predictions = torch.zeros_like(sim_map).to(sim_map.device).scatter(2,v.expand(sim_map.shape), 1).bool()
     return predictions
 
 
-class WeakREChead(nn.Module):
+class WeakREShead(nn.Module):
     def __init__(self, __C):
-        super(WeakREChead, self).__init__()
+        super(WeakREShead, self).__init__()
         self.each_select = __C.EACH_SELECT
     def forward(self, vis_fs,lan_fs,stat_sim_dict=None):
         if self.training:
-            loss_contra, stat_sim_dict = getContrast(vis_fs, lan_fs, stat_sim_dict, each_select=self.each_select)
+            loss_contra, stat_sim_dict = get_contrast(vis_fs, lan_fs, stat_sim_dict, each_select=self.each_select)
             return loss_contra, stat_sim_dict
         else:
-            predictions = getPrediction(vis_fs, lan_fs)
+            predictions = get_prediction(vis_fs, lan_fs)
             return predictions
