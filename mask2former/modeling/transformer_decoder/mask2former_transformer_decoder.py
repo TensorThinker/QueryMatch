@@ -333,8 +333,7 @@ class MultiScaleMaskedTransformerDecoder(nn.Module):
             self.class_embed = nn.Linear(hidden_dim, num_classes + 1)
         self.mask_embed = MLP(hidden_dim, hidden_dim, mask_dim, 3)
 
-        self.select_decoder_idx = 9  # 3
-        self.neg_query_idx = 3
+        self.select_decoder_idx = 9  
 
     @classmethod
     def from_config(cls, cfg, in_channels, mask_classification):
@@ -421,9 +420,6 @@ class MultiScaleMaskedTransformerDecoder(nn.Module):
             outputs_class, outputs_mask, attn_mask, decoder_output,mask_embed = self.forward_prediction_heads(output, mask_features, attn_mask_target_size=size_list[(i + 1) % self.num_feature_levels])
             if i == self.select_decoder_idx-1:
                 select_query = decoder_output
-            if i == self.neg_query_idx-1:
-                neg_decoder_output = decoder_output
-            # select_query = decoder_output
             predictions_class.append(outputs_class)
             predictions_mask.append(outputs_mask)
 
@@ -436,7 +432,6 @@ class MultiScaleMaskedTransformerDecoder(nn.Module):
                 predictions_class if self.mask_classification else None, predictions_mask
             ),
             'decoder_output': select_query,
-            'neg_decoder_output': neg_decoder_output,
             'mask_embed': mask_embed,
         }
         return out
