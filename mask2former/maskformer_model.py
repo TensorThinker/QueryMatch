@@ -195,7 +195,6 @@ class MaskFormer(nn.Module):
         mask_cls_results = outputs["pred_logits"]
         mask_pred_results = outputs["pred_masks"]
         decoder_outputs = outputs["decoder_output"]
-        neg_decoder_outputs = outputs["neg_decoder_output"]
         mask_embed = outputs["mask_embed"]
         # upsample masks
         mask_pred_results = F.interpolate(
@@ -209,7 +208,6 @@ class MaskFormer(nn.Module):
 
         processed_results_dict = {
                             "decoder_outputs":decoder_outputs,
-                            "neg_decoder_outputs":neg_decoder_outputs,
                              "sem_seg":None,
                              "panoptic_seg":None,
                              "instances":None,
