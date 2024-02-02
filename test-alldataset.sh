@@ -1,3 +1,0 @@
-python test_querymatch.py --config ./config_querymatch/refcoco.yaml --eval-weights ./logs/refcoco/38022/ckpt/last.pth --config-file ./configs/coco/instance-segmentation/swin/maskformer2_swin_base_384_bs16_50ep.yaml --eval-only MODEL.WEIGHTS ./model_final.pth
-python test_querymatch.py --config ./config_querymatch/refcoco+.yaml --eval-weights ./logs/refcoco+/54028/ckpt/last.pth --config-file ./configs/coco/instance-segmentation/swin/maskformer2_swin_base_384_bs16_50ep.yaml --eval-only MODEL.WEIGHTS ./model_final.pth
-python test_querymatch.py --config ./config_querymatch/refcocog.yaml --eval-weights ./logs/refcocog/54028/ckpt/last.pth --config-file ./configs/coco/instance-segmentation/swin/maskformer2_swin_base_384_bs16_50ep.yaml --eval-only MODEL.WEIGHTS ./model_final.pth
