@@ -1,78 +1,159 @@
-# Mask2Former: Masked-attention Mask Transformer for Universal Image Segmentation (CVPR 2022)
+# QueryMatch
 
-[Bowen Cheng](https://bowenc0221.github.io/), [Ishan Misra](https://imisra.github.io/), [Alexander G. Schwing](https://alexander-schwing.de/), [Alexander Kirillov](https://alexander-kirillov.github.io/), [Rohit Girdhar](https://rohitgirdhar.github.io/)
+This is the official implementation of "QueryMatch: A Query-based Contrastive Learning Framework for Weakly Supervised Referring Image Segmentation". In this paper,we propose a novel one-stage weakly supervised RIS framework named QueryMatch, This framework reformulates RIS as a Query-Text matching problem. Furthermore, we propose a strategy, namely NSQE, to estimate the quality of negative samples. This strategy significantly boosts performance by selecting high-quality negative samples, emphasizing their uniqueness and difficulty in discrimination.
 
-[[`arXiv`](https://arxiv.org/abs/2112.01527)] [[`Project`](https://bowenc0221.github.io/mask2former)] [[`BibTeX`](#CitingMask2Former)]
+<p align="center">
+	<img src="./figs/fig2.png" width="1000">
+</p>
 
-<div align="center">
-  <img src="https://bowenc0221.github.io/images/maskformerv2_teaser.png" width="100%" height="100%"/>
-</div><br/>
-
-### Features
-* A single architecture for panoptic, instance and semantic segmentation.
-* Support major segmentation datasets: ADE20K, Cityscapes, COCO, Mapillary Vistas.
-
-## Updates
-* Add Google Colab demo.
-* Video instance segmentation is now supported! Please check our [tech report](https://arxiv.org/abs/2112.10764) for more details.
 
 ## Installation
-
-See [installation instructions](INSTALL.md).
-
-## Getting Started
-
-See [Preparing Datasets for Mask2Former](datasets/README.md).
-
-See [Getting Started with Mask2Former](GETTING_STARTED.md).
-
-Run our demo using Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1uIWE5KbGFSjrxey2aRd5pWkKNY1_SaNq)
-
-Integrated into [Huggingface Spaces 🤗](https://huggingface.co/spaces) using [Gradio](https://github.com/gradio-app/gradio). Try out the Web Demo: [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/akhaliq/Mask2Former)
-
-Replicate web demo and docker image is available here: [![Replicate](https://replicate.com/facebookresearch/mask2former/badge)](https://replicate.com/facebookresearch/mask2former)
-
-## Advanced usage
-
-See [Advanced Usage of Mask2Former](ADVANCED_USAGE.md).
-
-## Model Zoo and Baselines
-
-We provide a large set of baseline results and trained models available for download in the [Mask2Former Model Zoo](MODEL_ZOO.md).
-
-## License
-
-Shield: [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-The majority of Mask2Former is licensed under a [MIT License](LICENSE).
-
-
-However portions of the project are available under separate license terms: Swin-Transformer-Semantic-Segmentation is licensed under the [MIT license](https://github.com/SwinTransformer/Swin-Transformer-Semantic-Segmentation/blob/main/LICENSE), Deformable-DETR is licensed under the [Apache-2.0 License](https://github.com/fundamentalvision/Deformable-DETR/blob/main/LICENSE).
-
-## <a name="CitingMask2Former"></a>Citing Mask2Former
-
-If you use Mask2Former in your research or wish to refer to the baseline results published in the [Model Zoo](MODEL_ZOO.md), please use the following BibTeX entry.
-
-```BibTeX
-@inproceedings{cheng2021mask2former,
-  title={Masked-attention Mask Transformer for Universal Image Segmentation},
-  author={Bowen Cheng and Ishan Misra and Alexander G. Schwing and Alexander Kirillov and Rohit Girdhar},
-  journal={CVPR},
-  year={2022}
-}
+- Clone this repo
+```bash
+git clone https://github.com/TensorThinker/QueryMatch.git
+cd QueryMatch
 ```
 
-If you find the code useful, please also consider the following BibTeX entry.
-
-```BibTeX
-@inproceedings{cheng2021maskformer,
-  title={Per-Pixel Classification is Not All You Need for Semantic Segmentation},
-  author={Bowen Cheng and Alexander G. Schwing and Alexander Kirillov},
-  journal={NeurIPS},
-  year={2021}
-}
+- Create a conda virtual environment and activate it
+```bash
+conda create -n querymatch python=3.8 -y
+conda activate querymatch
 ```
+
+- Install Pytorch following the [official installation instructions](https://pytorch.org/get-started/previous-versions)
+- Install detectron following the [official installation instructions](https://detectron2.readthedocs.io/en/latest/tutorials/install.html)
+  
+```bash
+git clone https://github.com/facebookresearch/detectron2.git
+python -m pip install -e detectron2
+```
+
+- Install apex following the [official installation guide](https://github.com/NVIDIA/apex)
+- Compile the DCN layer:
+  
+```bash
+cd utils/DCN
+./make.sh
+```
+
+```bash
+cd mask2former
+pip install -r requirements.txt
+cd ./modeling/pixel_decoder/ops
+sh make.sh
+```
+
+```bash
+wget https://github.com/explosion/spacy-models/releases/download/en_vectors_web_lg-2.1.0/en_vectors_web_lg-2.1.0.tar.gz -O en_vectors_web_lg-2.1.0.tar.gz
+pip install en_vectors_web_lg-2.1.0.tar.gz
+pip install albumentations
+pip install Pillow==9.5.0
+pip install tensorboardX
+```
+
+## Data Preparation
+
+- Download images and Generate annotations according to [SimREC](https://github.com/luogen1996/SimREC/blob/main/DATA_PRE_README.md).
+- Download the pretrained weights of Mask2former from 
+
+- The project structure should look like the following:
+
+```
+| -- QueryMatch
+     | -- data
+        | -- anns
+            | -- refcoco.json
+            | -- refcoco+.json
+            | -- refcocog.json
+        | -- images
+            | -- train2014
+                | -- COCO_train2014_000000000072.jpg
+                | -- ...
+     | -- config_querymatch
+     | -- configs
+     | -- datasets
+     | -- datasets_querymatch
+     | -- DCNv2_latest
+     | -- detectron2
+     | -- mask2former
+     | -- models_querymatch
+     | -- ...
+```
+- NOTE: our Mask2former is trained on COCO’s training images, 
+excluding those in RefCOCO, RefCOCO+, and RefCOCOg’s validation+testing. 
+
+## QueryMatch
+
+### Training
+```
+python train_querymatch.py --config ./config_querymatch/[DATASET_NAME].yaml --config-file ./configs/coco/instance-segmentation/swin/maskformer2_swin_base_384_bs16_50ep.yaml --eval-only MODEL.WEIGHTS [PATH_TO_MASK2FORMER_WEIGHT]
+
+```
+
+### Evaluation
+```
+python test_querymatch.py --config ./config_querymatch/[DATASET_NAME].yaml --eval-weights [PATH_TO_CHECKPOINT_FILE] --config-file ./configs/coco/instance-segmentation/swin/maskformer2_swin_base_384_bs16_50ep.yaml --eval-only MODEL.WEIGHTS [PATH_TO_MASK2FORMER_WEIGHT]
+
+```
+
+## Model Zoo
+
+### QueryMatch
+<table class="tg" style="undefined;table-layout: fixed">
+<colgroup>
+<col style="width: 140px">
+<col style="width: 60px">
+<col style="width: 60px">
+<col style="width: 60px">
+<col style="width: 60px">
+<col style="width: 60px">
+<col style="width: 60px">
+<col style="width: 100px">
+</colgroup>
+<thead>
+  <tr>
+    <th class="tg-7btt"><span style="color:#000">Method</span></th>
+    <th class="tg-7btt" colspan="3"><span style="color:#000">RefCOCO</span></th>
+    <th class="tg-7btt" colspan="3"><span style="color:#000">RefCOCO+</span></th>
+    <th class="tg-7btt"><span style="color:#000">RefCOCOg</span></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow"></td>
+    <td class="tg-c3ow"><span style="color:#000">val</span></td>
+    <td class="tg-c3ow"><span style="color:#000">testA</span></td>
+    <td class="tg-c3ow"><span style="color:#000">testB</span></td>
+    <td class="tg-c3ow"><span style="color:#000">val</span></td>
+    <td class="tg-c3ow"><span style="color:#000">testA</span></td>
+    <td class="tg-c3ow"><span style="color:#000">testB</span></td>
+    <td class="tg-c3ow"><span style="color:#000">val-g</span></td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><strong>QueryMatch</td>
+    <td class="tg-c3ow">57.82</td>
+    <td class="tg-c3ow">56.54</td>
+    <td class="tg-c3ow">58.43</td>
+    <td class="tg-c3ow">37.88</td>
+    <td class="tg-c3ow">38.35</td>
+    <td class="tg-c3ow">37.33</td>
+    <td class="tg-c3ow">37.85</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><strong>QueryMatch<sub>NSQE</sub></td>
+    <td class="tg-c3ow">59.10</td>
+    <td class="tg-c3ow">59.08</td>
+    <td class="tg-c3ow">58.82</td>
+    <td class="tg-c3ow">39.87</td>
+    <td class="tg-c3ow">41.44</td>
+    <td class="tg-c3ow">37.22</td>
+    <td class="tg-c3ow">40.31</td>
+  </tr>
+</tbody>
+</table>
 
 ## Acknowledgement
 
-Code is largely based on MaskFormer (https://github.com/facebookresearch/MaskFormer).
+Thanks a lot for the nicely organized code from the following repos
+- [SimREC](https://github.com/luogen1996/SimREC)
+- [Mask2Former](https://github.com/facebookresearch/Mask2Former)
