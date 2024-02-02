@@ -1,0 +1,3 @@
+python train_querymatch.py --config ./config_querymatch/refcoco.yaml --config-file ./configs/coco/instance-segmentation/swin/maskformer2_swin_base_384_bs16_50ep.yaml --eval-only MODEL.WEIGHTS ./model_final.pth
+python train_querymatch.py --config ./config_querymatch/refcoco+.yaml --config-file ./configs/coco/instance-segmentation/swin/maskformer2_swin_base_384_bs16_50ep.yaml --eval-only MODEL.WEIGHTS ./model_final.pth
+python train_querymatch.py --config ./config_querymatch/refcocog.yaml --config-file ./configs/coco/instance-segmentation/swin/maskformer2_swin_base_384_bs16_50ep.yaml --eval-only MODEL.WEIGHTS ./model_final.pth
