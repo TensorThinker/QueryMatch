@@ -1,0 +1,77 @@
+MODEL:
+  MODEL: 'QueryMatch'
+  USE_GLOVE: True
+  WORD_EMBED_SIZE: 300
+  EMBED_FREEZE: True
+  HIDDEN_SIZE: 512
+  DROPOUT_R: 0.1
+  MULTI_HEAD: 8
+  FF_SIZE: 2048
+  FLAT_GLIMPSES: 1
+  LANG_ENC: 'GRU'
+  N_SA: 3
+  VIS_ENC: 'mask2former'
+  VIS_FREEZE: True
+  SELECT_NUM: 20
+  CLASS_NUM: 80
+  EACH_SELECT: 4
+
+
+TRAIN:
+  GPU: [0,1]
+  BATCH_SIZE: 32 # total batch size on a single node if multiprocessing_distributed else batch size on one gpu
+  NUM_WORKER: 8 # same as BATCH_SIZE
+  LR: 0.0001
+  EPOCHS: 25
+  LR_DECAY_R: 0.2
+  PRINT_FREQ: 100
+  LOG_PATH: './logs/refcoco+'
+  LOG_IMAGE: True
+  PRETRAIN_WEIGHT: '.'
+  RESUME_PATH: ''
+  SCHEDULER: 'wcosine'
+  MIN_LR: 0.000001
+  WARMUP_LR: 0.0000001
+  WARMUP: 3
+  USE_EMA: True
+  OPT: Adam
+  OPT_PARAMS: {betas: '(0.9, 0.98)', eps: '1e-9'}
+  GRAD_NORM_CLIP: 0.15
+  AMP: False
+  SEED: 666666
+
+DISTRIBUTED:
+  # 1 on node 1, 0 on node 0
+  NODE_ID: 0
+  # number of nodes
+  WORLD_SIZE: 1
+  # 'tcp://IP_ADDR_NODE_0:FREEPORT' if multi nodes, 'tcp://127.0.0.1:FREEPORT' if single node
+  DIST_URL: "tcp://127.0.0.1:12345"
+  MULTIPROCESSING_DISTRIBUTED: True
+  RANK: 0
+
+DATA:
+  DATASET: 'refcoco+'
+  MAX_TOKEN: 15
+  INPUT_SHAPE: [416,416]
+
+  ANN_PATH: {
+  'refcoco':'/root/autodl-tmp/data_transfer/anns/refcoco.json',
+  'refcoco+': '/root/autodl-tmp/data_transfer/anns/refcoco+.json',
+  'refcocog': '/root/autodl-tmp/data_transfer/anns/refcocog.json',
+  'referit': '/root/autodl-tmp/data_transfer/refclef.json',
+  }
+
+  IMAGE_PATH: {
+  'refcoco': '/root/autodl-tmp/data_transfer/images/train2014',
+  'refcoco+': '/root/autodl-tmp/data_transfer/images/train2014',
+  'refcocog': '/root/autodl-tmp/data_transfer/images/train2014',
+  'referit': '/root/autodl-tmp/data_transfer/images/refclef',
+  }
+
+  MASK_PATH: {
+  'refcoco': '/root/autodl-tmp/data_transfer/masks/refcoco',
+  'refcoco+': '/root/autodl-tmp/data_transfer/masks/refcoco+',
+  'refcocog': '/root/autodl-tmp/data_transfer/masks/refcocog',
+  'referit': '/root/autodl-tmp/data_transfer/masks/refclef'
+  }
