@@ -55,23 +55,23 @@ DATA:
   MAX_TOKEN: 15
   INPUT_SHAPE: [416,416]
 
-  ANN_PATH: {
-  'refcoco':'/root/autodl-tmp/data_transfer/anns/refcoco.json',
-  'refcoco+': '/root/autodl-tmp/data_transfer/anns/refcoco+.json',
-  'refcocog': '/root/autodl-tmp/data_transfer/anns/refcocog.json',
-  'referit': '/root/autodl-tmp/data_transfer/refclef.json',
+ ANN_PATH: {
+  'refcoco':'yourpath',
+  'refcoco+': 'yourpath',
+  'refcocog': 'yourpath',
+  'referit': 'yourpath',
   }
 
   IMAGE_PATH: {
-  'refcoco': '/root/autodl-tmp/data_transfer/images/train2014',
-  'refcoco+': '/root/autodl-tmp/data_transfer/images/train2014',
-  'refcocog': '/root/autodl-tmp/data_transfer/images/train2014',
-  'referit': '/root/autodl-tmp/data_transfer/images/refclef',
+  'refcoco': 'yourpath',
+  'refcoco+': 'yourpath',
+  'refcocog': 'yourpath',
+  'referit': 'yourpath',
   }
 
   MASK_PATH: {
-  'refcoco': '/root/autodl-tmp/data_transfer/masks/refcoco',
-  'refcoco+': '/root/autodl-tmp/data_transfer/masks/refcoco+',
-  'refcocog': '/root/autodl-tmp/data_transfer/masks/refcocog',
-  'referit': '/root/autodl-tmp/data_transfer/masks/refclef'
+  'refcoco': 'yourpath',
+  'refcoco+': 'yourpath',
+  'refcocog': 'yourpath',
+  'referit': 'yourpath',
   }
