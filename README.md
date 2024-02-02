@@ -54,7 +54,6 @@ pip install tensorboardX
 ## Data Preparation
 
 - Download images and Generate annotations according to [SimREC](https://github.com/luogen1996/SimREC/blob/main/DATA_PRE_README.md).
-- Download the pretrained weights of Mask2former from [OneDrive](https://1drv.ms/u/s!AsezB8ADFd_jjXfJ15S2FXFprpIy?e=XS88eJ).
 
 - The project structure should look like the following:
 
@@ -159,10 +158,7 @@ python test_querymatch.py --config ./config_querymatch/[DATASET_NAME].yaml --eva
 - CUDA 11.7
 ### Compatibility Note
 This project is compatible with multiple CUDA versions, including but not limited to CUDA 11.3. While the relative performance trends remain consistent across different hardware environments, please note that the specific numerical results may vary slightly.
-Should you encounter issues configuring the official version of NVIDIA's Apex with the specified CUDA versions, we recommend referring to the following resources for guidance: [OneDrive](https://1drv.ms/u/s!AsezB8ADFd_jkQ61r4URZEQrXFRe?e=O2tAwV)
-
 ## Acknowledgement
 
 Thanks a lot for the nicely organized code from the following repos
-- [SimREC](https://github.com/luogen1996/SimREC)
 - [Mask2Former](https://github.com/facebookresearch/Mask2Former)
