@@ -32,7 +32,7 @@ python -m pip install -e detectron2
 - Compile the DCN layer:
   
 ```bash
-cd utils/DCN
+cd utils_querymatch/DCN
 ./make.sh
 ```
 
