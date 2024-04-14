@@ -38,11 +38,47 @@ from detectron2.engine import (
 )
 import detectron2.utils.comm as comm
 import warnings
-# 忽略所有警告
 warnings.filterwarnings("ignore")
 import cv2
 import random
+import numpy as np
 
+def find_largest_object_box_normalized(mask):
+    """
+    Find the normalized bounding box of the largest object in a binary mask.
+
+    Parameters:
+    - mask: A binary mask of shape (H, W, 1) where the object pixels are positive.
+
+    Returns:
+    - A tuple (x, y, w, h) representing the normalized bounding box of the largest
+      object, where x and y are the normalized coordinates of the top-left corner,
+      and w and h are the normalized width and height of the box. Returns None if no
+      objects are found.
+    """
+    # Find contours from the binary image
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if contours:
+        # Find the largest contour by area
+        largest_contour = max(contours, key=cv2.contourArea)
+
+        # Compute the bounding box for the largest contour
+        x, y, w, h = cv2.boundingRect(largest_contour)
+
+        # Normalize the bounding box coordinates
+        # img_height, img_width = mask.shape[:2]
+        # x_norm = x / img_width
+        # y_norm = y / img_height
+        # w_norm = w / img_width
+        # h_norm = h / img_height
+
+        # return (x_norm, y_norm, w_norm, h_norm)
+        # mask = mask * 255
+        # cv2.rectangle(mask, (x,y), (x+w,y+h), (255,0,0), 2)
+        # cv2.imwrite("test.png", mask)
+        return x, y, x+w, y+h
+    else:
+        return None
 
 def generate_random_color():
     red = random.randint(0, 255)
@@ -95,11 +131,12 @@ def validate(__C,
     data_time = AverageMeter('Data', ':6.5f')
     losses = AverageMeter('Loss', ':.4f')
     mask_ap = AverageMeter('MaskIoU', ':6.2f')
+    box_ap = AverageMeter('BoxIoU@0.5', ':6.2f')
     inconsistency_error = AverageMeter('IE', ':6.2f')
     mask_aps={}
     for item in np.arange(0.5, 1, 0.05):
         mask_aps[item]=[]
-    meters = [batch_time, data_time, losses, mask_ap, inconsistency_error]
+    meters = [batch_time, data_time, losses, mask_ap, box_ap, inconsistency_error]
     meters_dict = {meter.name: meter for meter in meters}
     progress = ProgressMeter(__C.VERSION, __C.EPOCHS, len(loader), meters, prefix=prefix+': ')
     with th.no_grad():
@@ -109,15 +146,29 @@ def validate(__C,
             ref_iter = ref_iter.cuda( non_blocking=True)
             image_iter = image_iter.cuda( non_blocking=True)
             box_iter = box_iter.cuda( non_blocking=True)
-            mask, all_masks= net(image_iter, ref_iter, input_shape)
+            mask, all_masks = net(image_iter, ref_iter, input_shape)
+            mask_np = mask.to(torch.uint8).cpu().numpy()
+            for i in range(len(mask)):
+                coord = find_largest_object_box_normalized(mask_np[i])
+                if i == 0:
+                    box = np.array(coord)
+                else:
+                    box = np.vstack((box,np.array(coord)))
+            pred_box_vis=box.copy()
             padded_image = padded_image.cpu().numpy()
             all_masks = all_masks.cpu().numpy()
             info_iter=info_iter.cpu().numpy()
+
+            gt_box_iter=gt_box_iter.squeeze(1)
+            gt_box_iter[:, 2] = (gt_box_iter[:, 0] + gt_box_iter[:, 2])
+            gt_box_iter[:, 3] = (gt_box_iter[:, 1] + gt_box_iter[:, 3])
+            gt_box_iter=gt_box_iter.cpu().numpy()
 
             #predictions to gt
             seg_iou=[]
             mask=mask.cpu().numpy()
             for i, mask_pred in enumerate(mask):
+                box[i]=yolobox2label(box[i],info_iter[i])
                 mask_gt=np.load(os.path.join(__C.MASK_PATH[__C.DATASET],'%d.npy'%mask_id[i]))
                 mask_pred=mask_processing(mask_pred,info_iter[i])
                 if writer is not None:
@@ -141,6 +192,8 @@ def validate(__C,
                     mask_aps[item].append(single_seg_ap[item]*100.)
                 seg_iou.append(single_seg_iou)
             seg_iou=np.array(seg_iou).astype(np.float32)
+            box_iou=batch_box_iou(torch.from_numpy(gt_box_iter), torch.from_numpy(box)).cpu().numpy()
+            box_ap.update((box_iou > 0.5).astype(np.float32).mean() * 100., box_iou.shape[0])
 
             mask_ap.update(seg_iou.mean()*100., seg_iou.shape[0])
 
@@ -152,11 +205,12 @@ def validate(__C,
 
         if main_process(__C,rank) and writer is not None:
             writer.add_scalar("Acc/MaskIoU", mask_ap.avg_reduce, global_step=epoch)
+            writer.add_scalar("Acc/BoxIoU@0.5", box_ap.avg_reduce, global_step=epoch)
             for item in mask_aps:
                 writer.add_scalar("Acc/MaskIoU@%.2f"%item, np.array(mask_aps[item]).mean(), global_step=epoch)
     if ema is not None:
         ema.restore()
-    return mask_ap.avg_reduce
+    return box_ap.avg_reduce, mask_ap.avg_reduce
 
 
 def main_worker(gpu,__C,cfg):
@@ -251,8 +305,8 @@ def main_worker(gpu,__C,cfg):
     save_ids=np.random.randint(1, len(val_loader) * __C.BATCH_SIZE, 100) if __C.LOG_IMAGE else None
     for loader_,prefix_ in zip(loaders,prefixs):
         print()
-        mask_ap=validate(__C,net,loader_,writer,0,gpu,val_set.ix_to_token,save_ids=save_ids,prefix=prefix_,whether_test=False)
-        print(mask_ap)
+        box_ap, mask_ap=validate(__C,net,loader_,writer,0,gpu,val_set.ix_to_token,save_ids=save_ids,prefix=prefix_,whether_test=False)
+        print(box_ap, mask_ap)
 
 
 def setup(args):
