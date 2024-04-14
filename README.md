@@ -97,7 +97,7 @@ python test_querymatch.py --config ./config_querymatch/[DATASET_NAME].yaml --eva
 
 ## Model Zoo
 
-### QueryMatch
+### QueryMatch on three RES benchmark datasets
 <table class="tg" style="undefined;table-layout: fixed">
 <colgroup>
 <col style="width: 140px">
@@ -129,16 +129,6 @@ python test_querymatch.py --config ./config_querymatch/[DATASET_NAME].yaml --eva
     <td class="tg-c3ow"><span style="color:#000">val-g</span></td>
   </tr>
   <tr>
-    <td class="tg-0pky"><strong>QueryMatch</td>
-    <td class="tg-c3ow">57.82</td>
-    <td class="tg-c3ow">56.54</td>
-    <td class="tg-c3ow">58.43</td>
-    <td class="tg-c3ow">37.88</td>
-    <td class="tg-c3ow">38.35</td>
-    <td class="tg-c3ow">37.33</td>
-    <td class="tg-c3ow">37.85</td>
-  </tr>
-  <tr>
     <td class="tg-0pky"><strong>QueryMatch<sub>NSQE</sub></td>
     <td class="tg-c3ow">59.10</td>
     <td class="tg-c3ow">59.08</td>
@@ -146,7 +136,51 @@ python test_querymatch.py --config ./config_querymatch/[DATASET_NAME].yaml --eva
     <td class="tg-c3ow">39.87</td>
     <td class="tg-c3ow">41.44</td>
     <td class="tg-c3ow">37.22</td>
-    <td class="tg-c3ow">40.31</td>
+    <td class="tg-c3ow">43.06</td>
+  </tr>
+</tbody>
+</table>
+
+### QueryMatch on three REC benchmark datasets
+<table class="tg" style="undefined;table-layout: fixed">
+<colgroup>
+<col style="width: 140px">
+<col style="width: 60px">
+<col style="width: 60px">
+<col style="width: 60px">
+<col style="width: 60px">
+<col style="width: 60px">
+<col style="width: 60px">
+<col style="width: 100px">
+</colgroup>
+<thead>
+  <tr>
+    <th class="tg-7btt"><span style="color:#000">Method</span></th>
+    <th class="tg-7btt" colspan="3"><span style="color:#000">RefCOCO</span></th>
+    <th class="tg-7btt" colspan="3"><span style="color:#000">RefCOCO+</span></th>
+    <th class="tg-7btt"><span style="color:#000">RefCOCOg</span></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow"></td>
+    <td class="tg-c3ow"><span style="color:#000">val</span></td>
+    <td class="tg-c3ow"><span style="color:#000">testA</span></td>
+    <td class="tg-c3ow"><span style="color:#000">testB</span></td>
+    <td class="tg-c3ow"><span style="color:#000">val</span></td>
+    <td class="tg-c3ow"><span style="color:#000">testA</span></td>
+    <td class="tg-c3ow"><span style="color:#000">testB</span></td>
+    <td class="tg-c3ow"><span style="color:#000">val-g</span></td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><strong>QueryMatch<sub>NSQE</sub></td>
+    <td class="tg-c3ow">66.02</td>
+    <td class="tg-c3ow">66.00</td>
+    <td class="tg-c3ow">65.48</td>
+    <td class="tg-c3ow">44.76</td>
+    <td class="tg-c3ow">46.72</td>
+    <td class="tg-c3ow">41.50</td>
+    <td class="tg-c3ow">48.47</td>
   </tr>
 </tbody>
 </table>
