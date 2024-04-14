@@ -1,6 +1,6 @@
 # QueryMatch
 
-This is the official implementation of "QueryMatch: A Query-based Contrastive Learning Framework for Weakly Supervised Referring Image Segmentation". In this paper,we propose a novel one-stage weakly supervised RIS framework named QueryMatch, This framework reformulates RIS as a Query-Text matching problem. Furthermore, we propose a strategy, namely NSQE, to estimate the quality of negative samples. This strategy significantly boosts performance by selecting high-quality negative samples, emphasizing their uniqueness and difficulty in discrimination.
+This is the official implementation of "QueryMatch: A Query-based Contrastive Learning Framework for Weakly Supervised Visual Grounding". In this paper,we propose a novel query-based one-stage framework for weakly supervised visual grounding, namely QueryMatch, Different from previous work, QueryMatch represents candidate objects with a set of query features, which inherently establish accurate one-to-one associations with visual objects. In this case, QueryMatch re-formulates weakly supervised visual grounding as a query-text matching problem, which can be optimized via the query-based contrastive learning. Based on QueryMatch we further propose an innovative strategy for effective weakly supervised learning, namely Negative Sample Quality Estimation (NSQE).
 
 <p align="center">
 	<img src="./figs/fig2.png" width="1000">
