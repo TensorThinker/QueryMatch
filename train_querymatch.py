@@ -234,7 +234,7 @@ def main_worker(gpu, __C, cfg):
             ema = EMA(net, 0.9997)
         train_one_epoch(__C, net, optimizer, scheduler, train_loader, scalar, writer, ith_epoch, gpu, ema)
 
-        mask_ap=validate(__C,net,val_loader,writer,ith_epoch,gpu,val_set.ix_to_token,save_ids=save_ids,ema=ema)
+        _, mask_ap=validate(__C,net,val_loader,writer,ith_epoch,gpu,val_set.ix_to_token,save_ids=save_ids,ema=ema)
 
         if main_process(__C, gpu):
             if ema is not None:
