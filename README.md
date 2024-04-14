@@ -129,7 +129,7 @@ python test_querymatch.py --config ./config_querymatch/[DATASET_NAME].yaml --eva
     <td class="tg-c3ow"><span style="color:#000">val-g</span></td>
   </tr>
   <tr>
-    <td class="tg-0pky"><strong>QueryMatch<sub>NSQE</sub></td>
+    <td class="tg-0pky"><strong>QueryMatch</td>
     <td class="tg-c3ow">59.10</td>
     <td class="tg-c3ow">59.08</td>
     <td class="tg-c3ow">58.82</td>
@@ -173,7 +173,7 @@ python test_querymatch.py --config ./config_querymatch/[DATASET_NAME].yaml --eva
     <td class="tg-c3ow"><span style="color:#000">val-g</span></td>
   </tr>
   <tr>
-    <td class="tg-0pky"><strong>QueryMatch<sub>NSQE</sub></td>
+    <td class="tg-0pky"><strong>QueryMatch</td>
     <td class="tg-c3ow">66.02</td>
     <td class="tg-c3ow">66.00</td>
     <td class="tg-c3ow">65.48</td>
