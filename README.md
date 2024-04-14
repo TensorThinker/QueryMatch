@@ -3,7 +3,7 @@
 This is the official implementation of "QueryMatch: A Query-based Contrastive Learning Framework for Weakly Supervised Visual Grounding". In this paper,we propose a novel query-based one-stage framework for weakly supervised visual grounding, namely QueryMatch, Different from previous work, QueryMatch represents candidate objects with a set of query features, which inherently establish accurate one-to-one associations with visual objects. In this case, QueryMatch re-formulates weakly supervised visual grounding as a query-text matching problem, which can be optimized via the query-based contrastive learning. Based on QueryMatch we further propose an innovative strategy for effective weakly supervised learning, namely Negative Sample Quality Estimation (NSQE).
 
 <p align="center">
-	<img src="./figs/fig2.jpg" width="1000">
+	<img src="./figs/fig2.png" width="1000">
 </p>
 
 
