@@ -195,3 +195,4 @@ This project is compatible with multiple CUDA versions, including but not limite
 
 Thanks a lot for the nicely organized code from the following repos
 - [Mask2Former](https://github.com/facebookresearch/Mask2Former)
+- [SimREC](https://github.com/luogen1996/SimREC)
