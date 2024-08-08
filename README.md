@@ -53,7 +53,7 @@ pip install tensorboardX
 ## Data Preparation
 
 - Download images and Generate annotations according to [SimREC](https://github.com/luogen1996/SimREC/blob/main/DATA_PRE_README.md).
-
+- Download the pretrained weights of Mask2former from [OneDrive](https://1drv.ms/u/c/e3df1503c007b3c7/EZcn4gxHhcZKjWRgZl9MbgoBS_TS-_EqnCvV355cSp4laQ?e=XQsvtM).
 - The project structure should look like the following:
 
 ```
