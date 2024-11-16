@@ -20,6 +20,12 @@ conda activate querymatch
 ```
 
 - Install Pytorch following the [official installation instructions](https://pytorch.org/get-started/previous-versions)
+
+```bash
+# CUDA 11.7
+pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
+```
+
 - Install detectron following the [official installation instructions](https://detectron2.readthedocs.io/en/latest/tutorials/install.html)
   
 ```bash
@@ -28,6 +34,11 @@ python -m pip install -e detectron2
 ```
 
 - Install apex following the [official installation guide](https://github.com/NVIDIA/apex)
+
+```bash
+pip install -v --disable-pip-version-check --no-build-isolation --no-cache-dir ./
+```
+
 - Compile the DCN layer:
   
 ```bash
@@ -189,6 +200,7 @@ python test_querymatch.py --config ./config_querymatch/[DATASET_NAME].yaml --eva
 - GPU: RTX 4090(24GB)
 - CPU: 32 vCPU Intel(R) Xeon(R) Platinum 8352V CPU @ 2.10GHz
 - CUDA 11.7
+- torch 2.0.1
 ### Compatibility Note
 This project is compatible with multiple CUDA versions, including but not limited to CUDA 11.3. While the relative performance trends remain consistent across different hardware environments, please note that the specific numerical results may vary slightly.
 ## Acknowledgement
