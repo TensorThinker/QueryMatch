@@ -1,10 +1,26 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
+from . import data  # register all new datasets
+from . import modeling
 
-from .utils.env import setup_environment
+# config
+from .config import add_maskformer2_config
 
-setup_environment()
+# dataset loading
+from .data.dataset_mappers.coco_instance_new_baseline_dataset_mapper import COCOInstanceNewBaselineDatasetMapper
+from .data.dataset_mappers.coco_panoptic_new_baseline_dataset_mapper import COCOPanopticNewBaselineDatasetMapper
+from .data.dataset_mappers.mask_former_instance_dataset_mapper import (
+    MaskFormerInstanceDatasetMapper,
+)
+from .data.dataset_mappers.mask_former_panoptic_dataset_mapper import (
+    MaskFormerPanopticDatasetMapper,
+)
+from .data.dataset_mappers.mask_former_semantic_dataset_mapper import (
+    MaskFormerSemanticDatasetMapper,
+)
 
+# models
+from .maskformer_model import MaskFormer
+from .test_time_augmentation import SemanticSegmentorWithTTA
 
-# This line will be programatically read/write by setup.py.
-# Leave them at the bottom of this file and don't touch them.
-__version__ = "0.6"
+# evaluation
+from .evaluation.instance_evaluation import InstanceSegEvaluator
