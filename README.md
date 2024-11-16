@@ -203,6 +203,18 @@ python test_querymatch.py --config ./config_querymatch/[DATASET_NAME].yaml --eva
 - torch 2.0.1
 ### Compatibility Note
 This project is compatible with multiple CUDA versions, including but not limited to CUDA 11.3. While the relative performance trends remain consistent across different hardware environments, please note that the specific numerical results may vary slightly.
+
+## Citation
+
+```BibTeX
+@inproceedings{chen2024querymatch,
+  title={QueryMatch: A Query-based Contrastive Learning Framework for Weakly Supervised Visual Grounding},
+  author={Chen, Shengxin and Luo, Gen and Zhou, Yiyi and Sun, Xiaoshuai and Jiang, Guannan and Ji, Rongrong},
+  booktitle={Proceedings of the 32nd ACM International Conference on Multimedia},
+  pages={4177--4186},
+  year={2024}
+}
+```
 ## Acknowledgement
 
 Thanks a lot for the nicely organized code from the following repos
