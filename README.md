@@ -6,6 +6,11 @@ This is the official implementation of "QueryMatch: A Query-based Contrastive Le
 	<img src="./figs/fig2.png" width="1000">
 </p>
 
+## Changes 
+- **`2025/04`**: Optimized memory usage in the AQS implementation, improved some code, and released the trained QueryMatch weights.
+- **`2024/07`**: Our paper was accepted for ACM MM 2024.
+- **`2024/04`**: The repository was initially created.
+
 ## Installation
 - Clone this repo
 ```bash
