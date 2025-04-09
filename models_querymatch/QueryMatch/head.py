@@ -12,33 +12,44 @@ def min_max_normalize(matrix,min_vals=None,max_vals=None,dim=1):
     normalized_matrix = (matrix - min_vals) / (max_vals - min_vals)
     return normalized_matrix
 
-
-def batch_get_hq_negqr(candi_vec, lan_emb, each_select=4):
+def batch_get_rand_negqr(candi_vec,each_select):
     bs, negn, qn, fd = candi_vec.shape[0], candi_vec.shape[1], candi_vec.shape[2], candi_vec.shape[-1]
-    max_vals = torch.ones((bs, 1)).to(candi_vec.device)
-    min_vals = (max_vals * -1).to(candi_vec.device)
-    uniqueness = torch.ones(bs, negn, qn).to(candi_vec.device)
-    all_candi_vec = candi_vec.view(bs, negn*qn, fd)
-    self_similarity = F.cosine_similarity(candi_vec.unsqueeze(3).expand(bs,negn,qn,negn*qn,fd), all_candi_vec.unsqueeze(1).unsqueeze(2).expand(bs,negn,qn,negn*qn,fd),dim=-1)  # bs,negn,qn,qn
-    self_sim_norm = min_max_normalize(-self_similarity,min_vals.unsqueeze(2).unsqueeze(3),max_vals.unsqueeze(2).unsqueeze(3))
+    indices = torch.randint(0, qn, (bs, negn, each_select)).to(candi_vec.device)
+    return indices
+
+def batch_get_difficult_negqr(candi_vec, lan_emb, each_select):
     lan_similarity = torch.einsum('bnvd, bd -> bnv',candi_vec,lan_emb.squeeze(1))
     difficulty = min_max_normalize(lan_similarity,dim=2)
-    select_score = uniqueness * difficulty
+    select_score = difficulty
+    value, res_indices = torch.topk(select_score,k=each_select,dim=-1)
+    return res_indices
+
+def batch_get_hq_negqr(candi_vec, lan_emb, each_select=4):
+    bs, negn, qn, fd = candi_vec.shape[0], candi_vec.shape[1], candi_vec.shape[2], candi_vec.shape[-1] # bs,(bs-1),qn,fd: 16,15,20,512
+    norm_candi = F.normalize(candi_vec, p=2, dim=-1)
+    norm_all = F.normalize(candi_vec.view(bs, negn*qn, fd), p=2, dim=-1)
+    with torch.autocast(device_type='cuda', dtype=torch.float16):
+        self_similarity = torch.matmul(norm_candi.unsqueeze(3), norm_all.unsqueeze(1).unsqueeze(2).transpose(-1,-2)).squeeze().to(torch.float32)
+    uniqueness = torch.ones(bs, negn, qn).to(candi_vec.device) 
+    max_vals = torch.ones((bs, 1)).to(candi_vec.device)
+    self_sim_norm = min_max_normalize(-self_similarity,(max_vals * -1).unsqueeze(2).unsqueeze(3),max_vals.unsqueeze(2).unsqueeze(3))
+    lan_similarity = torch.einsum('bnvd, bd -> bnv',candi_vec,lan_emb.squeeze(1))
+    difficulty = min_max_normalize(lan_similarity,dim=2)
+    select_score = uniqueness * (difficulty)
     # select_score = uniqueness + difficulty
-    # select_score = uniqueness 
-    # select_score = difficulty
+    # select_score = uniqueness * (difficulty**2)
+
     for i in range(each_select):
         value, indices = torch.max(select_score,dim=-1)  
-        mul_indices = indices + (torch.arange(15).unsqueeze(0).expand(bs,negn).to(candi_vec.device)*qn)
+        mul_indices = indices + (torch.arange(negn).unsqueeze(0).expand(bs,negn).to(candi_vec.device)*qn)
         mul_indices = mul_indices.unsqueeze(1).expand(bs,negn,negn).unsqueeze(2).expand(bs,negn,qn,negn)
         indices = indices.unsqueeze(2)
         query_value = self_sim_norm.gather(3,mul_indices.to(self_sim_norm.device))
         query_value = torch.min(query_value,dim=-1)[0]
         uniqueness, _ = torch.min(torch.stack([uniqueness, query_value]), dim=0) 
-        select_score = uniqueness * difficulty
+        select_score = uniqueness * (difficulty)
         # select_score = uniqueness + difficulty
-        # select_score = uniqueness 
-        # select_score = difficulty
+        # select_score = uniqueness * (difficulty**2)
         if i == 0:
             res_indices = indices
         else:
