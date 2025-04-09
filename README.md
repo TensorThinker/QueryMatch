@@ -242,7 +242,7 @@ QueryMatch on three REC benchmark datasets
 - CUDA 11.7
 - torch 2.0.1
 ### Compatibility Note
-This project is compatible with multiple CUDA versions, including but not limited to CUDA 11.3. While the relative performance trends remain consistent across different hardware environments, please note that the specific numerical results may vary slightly.
+This project is compatible with multiple CUDA versions, including but not limited to CUDA 11.3. While overall performance trends remain consistent across various hardware environments, please note that specific numerical results may vary slightly.
 
 ## Citation
 
